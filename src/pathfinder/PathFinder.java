@@ -254,6 +254,15 @@ public class PathFinder{
 	return rects2;
 	}
 	
+	boolean boatTest()
+	{
+		if(walker.forceStopPF)return false;
+		Gob boat = m_util.findClosestWorldObject("boat");
+		Gob player = m_util.getPlayerGob();
+		if(boat == null) return false;
+		return (player.checkSitting() && player.getc().equals(boat.getc()) );
+	}
+	/**
 	boolean tooClose(Rectangle r1, Rectangle r2, boolean y)
 	{
 		if(y)
@@ -264,16 +273,7 @@ public class PathFinder{
 				return true;
 		
 	return false;
-	}
-	
-	boolean boatTest()
-	{
-		if(walker.forceStopPF)return false;
-		Gob boat = m_util.findClosestWorldObject("boat");
-		Gob player = m_util.getPlayerGob();
-		if(boat == null) return false;
-		return (player.checkSitting() && player.getc().equals(boat.getc()) );
-	}
+	}*/
 	
 	ArrayList<Rectangle> merge (ArrayList<Rectangle> merged)
 	{
@@ -293,34 +293,35 @@ public class PathFinder{
 			if(i==id && i<merged.size()-1)i++;
 			rect=merged.get(i);
 			
-			if(Current.y==rect.y && Current.height==rect.height && Current.x<rect.x && Current.x+rect.width>rect.x)
+			if(Current!=rect && Current.y==rect.y && Current.height==rect.height && Current.x<=rect.x && Current.x+Current.width>rect.x)
 			{
-				if(tooClose(Current,rect,true))
-				{
-				size=(Current.x-rect.x);
-				if(size<0) size=-size;
-				size+=rect.width;
+				//if(tooClose(Current,rect,true))
+				//{
+				if(rect.x+rect.width<Current.x+Current.width)
+					size=Current.width;
+				else
+					size=rect.x+rect.width-Current.x;
 					rect.setBounds(Current.x, Current.y,size,rect.height);
 					merged.remove(Current);
 					Current=rect;
 					combine=true;
 					if(i>0)i--;
-				}
+				//}
 			}
-			if(Current.x==rect.x && Current.width==rect.width && Current.y<rect.y && Current.y+Current.height>rect.y)
+			else if(Current!=rect && Current.x==rect.x && Current.width==rect.width && Current.y<=rect.y && Current.y+Current.height>rect.y)
 			{
-				if(tooClose(Current,rect,false))
-				{
-				size=(Current.y-rect.y);
-				if(size<0) size=-size;
-				size+=rect.height;
+				
+				if(rect.y+rect.height<Current.y+Current.height)
+					size=Current.height;
+				else
+					size=rect.y+rect.height-Current.y;
 					
 					rect.setBounds(Current.x, Current.y,rect.width,size);
 					merged.remove(Current);
 					Current=rect;
 					combine=true;
 					if(i>0)i--;
-				}
+				
 				}
 				
 			
